@@ -11,6 +11,12 @@ from django.contrib.auth import authenticate, login
 
 # Display all published articles
 def article_list(request):
+    """
+    Display all published articles.
+
+    Args:
+        request (HttpRequest): The request object.
+    """
     user = request.user
     if user.is_authenticated and hasattr(user, 'role'):
         if user.role == 'reader':
@@ -26,6 +32,13 @@ def article_list(request):
 
 # Show one specific news story
 def article_detail(request, pk):
+    """
+    Show one specific news story.
+
+    Args:
+        request (HttpRequest): The request object.
+        pk (int): Article primary key.
+    """
     article = get_object_or_404(Article, pk=pk)
     return render(request, "news/article_detail.html", {"article": article})
 
@@ -33,6 +46,12 @@ def article_detail(request, pk):
 # Logic to publish a new article
 @login_required
 def article_create(request):
+    """
+    Publish a new article.
+
+    Args:
+        request (HttpRequest): The request object.
+    """
     user = request.user
     if not hasattr(user, 'role') or user.role != 'journalist':
         return HttpResponse("Access Denied: Only Journalists can create articles.")
@@ -51,14 +70,23 @@ def article_create(request):
 
 @login_required(login_url='/login/')
 def read_exclusive_report(request, article_id):
+    """
+    Read exclusive report page.
+
+    Args:
+        request (HttpRequest): The request object.
+        article_id (int): Article ID.
+    """
     return render(request, 'news/exclusive.html')
 
 
 @login_required
 def publish_article(request):
     """
-    Handles publishing a news article. Only users with 'news.add_article' permission can publish.
-    Combines previous publish_article and publish_news_story logic for clarity.
+    Publish a news article.
+
+    Args:
+        request (HttpRequest): The request object.
     """
     if request.user.has_perm('news.add_article'):
         return render(request, 'news/publish_success.html')
@@ -67,6 +95,12 @@ def publish_article(request):
 
 
 def register_user(request):
+    """
+    Register a new user.
+
+    Args:
+        request (HttpRequest): The request object.
+    """
     if request.method == 'POST':
         form = RegisterUserForm(request.POST)
         if form.is_valid():
@@ -87,6 +121,13 @@ def register_user(request):
 
 @login_required
 def post_article_comment(request, article_id):
+    """
+    Post a comment on article.
+
+    Args:
+        request (HttpRequest): The request object.
+        article_id (int): Article ID.
+    """
     article = get_object_or_404(Article, pk=article_id)
     if request.method == "POST":
         form = CommentForm(request.POST)
@@ -98,6 +139,12 @@ def post_article_comment(request, article_id):
 
 
 def send_news_password_reset(request):
+    """
+    Send password reset email.
+
+    Args:
+        request (HttpRequest): The request object.
+    """
     if request.method == 'POST':
         user_email = request.POST.get('email')
         try:
@@ -117,6 +164,13 @@ def send_news_password_reset(request):
 
 @login_required
 def edit_article_content(request, pk):
+    """
+    Edit article content.
+
+    Args:
+        request (HttpRequest): The request object.
+        pk (int): Article primary key.
+    """
     article = get_object_or_404(Article, pk=pk)
     user = request.user
     can_edit = False
@@ -138,18 +192,27 @@ def edit_article_content(request, pk):
 
 @login_required
 def newsletter_list(request):
+    """
+    List all newsletters.
+    """
     newsletters = Newsletter.objects.all()
     return render(request, "news/newsletter_list.html", {"newsletters": newsletters})
 
 
 @login_required
 def newsletter_detail(request, pk):
+    """
+    Show newsletter details.
+    """
     newsletter = get_object_or_404(Newsletter, pk=pk)
     return render(request, "news/newsletter_detail.html", {"newsletter": newsletter})
 
 
 @login_required
 def newsletter_create(request):
+    """
+    Create a new newsletter.
+    """
     user = request.user
     if not hasattr(user, 'role') or user.role not in ['journalist', 'editor']:
         return HttpResponse("Access Denied: Only Journalists and Editors can create newsletters.")
@@ -169,6 +232,9 @@ def newsletter_create(request):
 
 @login_required
 def newsletter_edit(request, pk):
+    """
+    Edit a newsletter.
+    """
     newsletter = get_object_or_404(Newsletter, pk=pk)
     user = request.user
     can_edit = False
@@ -192,19 +258,17 @@ def newsletter_edit(request, pk):
 @login_required(login_url='/accounts/login/')
 def welcome_view(request):
     """
-    Renders the welcome page
+    Render the welcome page.
     """
     return render(request, 'welcome.html')
 
 
-def welcome(request):
-    """
-    Render the welcome page template.
-    """
-    return render(request, 'welcome.html')
 
 @login_required
 def approve_article(request, pk):
+    """
+    Approve an article.
+    """
     user = request.user
     if not hasattr(user, 'role') or user.role != 'editor':
         return HttpResponse("Access Denied: Only Editors can approve articles.<br><a href='/'>Back to Main Menu</a>")
@@ -217,12 +281,21 @@ def approve_article(request, pk):
     return render(request, "news/approve_article.html", {"article": article})
 
 def home_redirect(request):
+    """
+    Redirect to login page.
+    """
     return redirect('login')
 
 def profile_redirect(request):
+    """
+    Redirect to profile page.
+    """
     return HttpResponseNotFound("Profile page does not exist. Please use the navigation to view articles.")
 
 def login_page(request):
+    """
+    Show login page.
+    """
     articles = Article.objects.filter(approved=True)
     if request.user.is_authenticated:
         return render(request, 'registration/login.html', {'articles': articles})
@@ -237,6 +310,9 @@ def login_page(request):
     return render(request, 'registration/login.html', {'form': form, 'articles': articles})
 
 def create_missing_journalists():
+    """
+    Create missing journalist objects.
+    """
     from .models import CustomUser, Journalist
     missing = CustomUser.objects.filter(role='journalist').exclude(id__in=Journalist.objects.values_list('user_id', flat=True))
     for user in missing:
