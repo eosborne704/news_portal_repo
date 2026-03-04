@@ -11,12 +11,18 @@ from django.db import models
 from .signals import send_article_approved_email
 
 class ArticleViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet for Articles
+    """
     queryset = Article.objects.filter(approved=True)
     serializer_class = ArticleSerializer
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
     def get_permissions(self):
+        """
+        Get permissions for action.
+        """
         if self.action == 'create':
             return [IsJournalist()]
         if self.action in ['update', 'partial_update', 'destroy']:
@@ -26,6 +32,9 @@ class ArticleViewSet(viewsets.ModelViewSet):
         return [IsAuthenticated()]
 
     def get_queryset(self):
+        """
+        Get queryset for viewset.
+        """
         user = self.request.user
         if self.action == 'subscribed':
             # Only return articles from user's subscriptions
@@ -39,12 +48,18 @@ class ArticleViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['get'])
     def subscribed(self, request):
+        """
+        Get subscribed articles.
+        """
         articles = self.get_queryset()
         serializer = self.get_serializer(articles, many=True)
         return Response(serializer.data)
 
     @action(detail=True, methods=['post'])
     def approve(self, request, pk=None):
+        """
+        Approve an article object.
+        """
         article = self.get_object()
         article.approved = True
         article.save()
