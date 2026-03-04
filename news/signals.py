@@ -1,6 +1,9 @@
 from django.core.mail import send_mail
 
 def send_article_approved_email(article):
+    """
+    Send email for approved article.
+    """
     # Example email logic
     send_mail(
         subject=f"Article Approved: {article.title}",
