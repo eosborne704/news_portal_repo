@@ -1,0 +1,11 @@
+{% block title %}Approve Article{% endblock %}
+{% block content %}
+<div class="login-block">
+  <h2 class="now-news-title">Approve Article</h2>
+  <form method="post">
+      {% csrf_token %}
+      <button type="submit">Approve</button>
+  </form>
+  <a href="{% url 'article_detail' pk=article.pk %}">Back to Article</a>
+</div>
+{% endblock %}

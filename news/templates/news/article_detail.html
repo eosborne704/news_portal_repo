@@ -1,0 +1,13 @@
+{% block title %}Now News{% endblock %}
+{% block content %}
+<div class="login-block">
+  <h2 class="now-news-title">{{ article.title }}</h2>
+  <p>{{ article.content }}</p>
+  <p>Author: {{ article.author }}</p>
+  <p>Publisher: {{ article.publisher }}</p>
+  <p>Created: {{ article.created_at }}</p>
+  <a href="{% url 'edit_article_content' pk=article.pk %}">Edit Article</a>
+  <a href="{% url 'article_list' %}">Back to Articles</a>
+  <a href="/">Back to Menu</a>
+</div>
+{% endblock %}

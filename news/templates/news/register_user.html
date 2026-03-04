@@ -1,0 +1,19 @@
+{% block title %}Register User{% endblock %}
+{% block content %}
+<div class="login-block">
+  <h2 class="now-news-title">Register User</h2>
+  <form method="post">
+      {% csrf_token %}
+      <div class="card" style="width: 25rem;">
+          <div class="card-body">
+              <p class="card-text">
+                  {{ form.as_p }}
+              </p>
+          </div>
+      </div>
+      <button type="submit">Register</button>
+  </form>
+  <a href="{% url 'article_list' %}">Back to Articles</a>
+  <a href="/">Back to Menu</a>
+</div>
+{% endblock %}

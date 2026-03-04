@@ -1,0 +1,23 @@
+Test Results:
+
+Successful:
+
+
+Failed/Errored Tests:
+---------------------
+
+test_reader_can_get_subscribed_articles
+- Error: NameError: name 'models' is not defined
+- Location: news/api_views.py, line 33
+- Cause: The code uses models.Q(...) but does not import models in api_views.py.
+
+How to Fix:
+-----------
+Add this import to the top of news/api_views.py:
+from django.db import models
+
+test_signal_email_sent_on_approve
+- Error: AssertionError: False is not true
+- Location: news/tests.py, line 132
+- Cause: The test expected send_article_approved_email to be called, but it was not due to incorrect patch path.
+- Status: Fixed by patching 'news.api_views.send_article_approved_email'. Test now passes.

@@ -1,0 +1,19 @@
+{% block title %}Comment{% endblock %}
+{% block content %}
+<div class="login-block">
+  <h2 class="now-news-title">Comment</h2>
+  <form method="post">
+      {% csrf_token %}
+      <div class="card" style="width: 25rem;">
+          <div class="card-body">
+              <p class="card-text">
+                  {{ form.as_p }}
+              </p>
+          </div>
+      </div>
+      <button type="submit">Submit</button>
+  </form>
+  <a href="{% url 'article_detail' pk=article.pk %}">Back to Article</a>
+  <a href="/">Back to Menu</a>
+</div>
+{% endblock %}

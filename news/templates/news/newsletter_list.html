@@ -1,0 +1,14 @@
+{% block title %}Now News{% endblock %}
+{% block content %}
+<div class="login-block">
+  <h2 class="now-news-title">All Newsletters</h2>
+  <ul>
+      {% for newsletter in newsletters %}
+          <li><a href="{% url 'newsletter_detail' pk=newsletter.pk %}">{{ newsletter.title }}</a></li>
+      {% endfor %}
+  </ul>
+  <a href="{% url 'newsletter_create' %}">Create Newsletter</a>
+  <a href="{% url 'article_list' %}">Back to Articles</a>
+  <a href="/">Back to Menu</a>
+</div>
+{% endblock %}
