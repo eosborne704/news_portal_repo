@@ -1,8 +1,8 @@
-from rest_framework import viewsets, permissions, status
+from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from .models import Article, models
-from .serializers import ArticleSerializer, UserSerializer, PublisherSerializer
+from .models import Article
+from .serializers import ArticleSerializer
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
@@ -10,10 +10,12 @@ from .api_permissions import IsJournalist, IsEditor, IsOwnerOrEditor
 from django.db import models
 from .signals import send_article_approved_email
 
+
 class ArticleViewSet(viewsets.ModelViewSet):
     """
     ViewSet for Articles
     """
+
     queryset = Article.objects.filter(approved=True)
     serializer_class = ArticleSerializer
     authentication_classes = [TokenAuthentication]
@@ -23,11 +25,11 @@ class ArticleViewSet(viewsets.ModelViewSet):
         """
         Get permissions for action.
         """
-        if self.action == 'create':
+        if self.action == "create":
             return [IsJournalist()]
-        if self.action in ['update', 'partial_update', 'destroy']:
+        if self.action in ["update", "partial_update", "destroy"]:
             return [IsOwnerOrEditor()]
-        if self.action == 'approve':
+        if self.action == "approve":
             return [IsEditor()]
         return [IsAuthenticated()]
 
@@ -36,17 +38,17 @@ class ArticleViewSet(viewsets.ModelViewSet):
         Get queryset for viewset.
         """
         user = self.request.user
-        if self.action == 'subscribed':
+        if self.action == "subscribed":
             # Only return articles from user's subscriptions
-            publisher_ids = user.subscriptions_publishers.values_list('id', flat=True)
-            journalist_ids = user.subscriptions_journalists.values_list('id', flat=True)
+            publisher_ids = user.subscriptions_publishers.values_list("id", flat=True)
+            journalist_ids = user.subscriptions_journalists.values_list("id", flat=True)
             return Article.objects.filter(approved=True).filter(
-                models.Q(publisher_id__in=publisher_ids) |
-                models.Q(author_id__in=journalist_ids)
+                models.Q(publisher_id__in=publisher_ids)
+                | models.Q(author_id__in=journalist_ids)
             )
         return Article.objects.filter(approved=True)
 
-    @action(detail=False, methods=['get'])
+    @action(detail=False, methods=["get"])
     def subscribed(self, request):
         """
         Get subscribed articles.
@@ -55,7 +57,7 @@ class ArticleViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(articles, many=True)
         return Response(serializer.data)
 
-    @action(detail=True, methods=['post'])
+    @action(detail=True, methods=["post"])
     def approve(self, request, pk=None):
         """
         Approve an article object.
@@ -64,11 +66,13 @@ class ArticleViewSet(viewsets.ModelViewSet):
         article.approved = True
         article.save()
         send_article_approved_email(article)
-        return Response({'status': 'approved'})
+        return Response({"status": "approved"})
+
 
 # JWT Auth endpoints
 from django.urls import path
+
 api_auth_patterns = [
-    path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path("token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
+    path("token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
 ]

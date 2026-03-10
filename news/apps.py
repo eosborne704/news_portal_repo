@@ -5,4 +5,5 @@ class NewsConfig(AppConfig):
     """
     App config for news app.
     """
-    name = 'news'
+
+    name = "news"
