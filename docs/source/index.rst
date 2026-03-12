@@ -28,7 +28,7 @@ For more details, see the generated documentation below.
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
-      models
-      api
-      usage
+
+   modules
+   usage
 
